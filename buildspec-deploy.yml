@@ -1,0 +1,29 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: ap-south-1
+    CLUSTER_NAME: brain-cluster
+
+phases:
+  install:
+    commands:
+      - echo Installing kubectl...
+      - curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.0/2023-11-14/bin/linux/amd64/kubectl
+      - chmod +x kubectl
+      - mv kubectl /usr/local/bin/
+
+  pre_build:
+    commands:
+      - echo Updating kubeconfig...
+      - aws eks --region ap-south-1 update-kubeconfig --name $CLUSTER_NAME
+
+  build:
+    commands:
+      - echo Deploying to EKS...
+      - kubectl apply -f deployment.yaml
+      - kubectl apply -f service.yaml
+
+  post_build:
+    commands:
+      - echo Deployment completed
