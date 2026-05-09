@@ -3,9 +3,12 @@ FROM node:18 AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 COPY . .
+
+RUN chmod -R 755 /app/node_modules/.bin
+
 RUN npm run build
 
 # Step 2: Serve using nginx
